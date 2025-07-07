@@ -1,0 +1,48 @@
+# Compiled class files
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Log files
+*.log
+logs/
+
+# Maven/Gradle generated files
+/target/
+/build/
+.gradle/
+.project
+.classpath
+.settings/
+bin/
+/out/ # For IntelliJ IDEA
+
+# IDE-specific files
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.DS_Store
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Eclipse specific files
+.metadata
+tmp/
+*.bak
+
+# Spring Boot specific
+*.jks # Keystore files (if you use embedded SSL)
+
+# Operating System files
+Thumbs.db
