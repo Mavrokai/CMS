@@ -1,11 +1,11 @@
-## Projet My_events
+# Projet My_events
 
-# Client
+## Client
 
-npm install
-npm run dev
+- npm install
+- npm run dev
 
-# Server
+## Server
 
-./gradlew build
-./gradlew bootRun
+- ./gradlew build
+- ./gradlew bootRun
