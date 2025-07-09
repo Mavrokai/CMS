@@ -65,4 +65,13 @@ public class OpendatasoftController {
     ) {
         return service.exportCSV(delimiter, listSeparator, quoteAll, withBom);
     }
+
+    @GetMapping("/api/exports/dcat/{dcat_ap_format}")
+    public Mono<String> exportDCAT(
+        @PathVariable String dcat_ap_format,
+        @RequestParam(required = false, name = "include_exports") String includeExports,
+        @RequestParam(required = false, name = "use_labels_in_exports") Boolean useLabelsInExports
+    ) {
+        return service.exportDCAT(dcat_ap_format, includeExports, useLabelsInExports);
+    }
 }

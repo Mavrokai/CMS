@@ -15,7 +15,7 @@ public class OpendatasoftService {
     public OpendatasoftService(@Value("${opendatasoft.baseurl}") String baseUrl) {
         this.webClient = WebClient.builder()
             .baseUrl(baseUrl)
-            .codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(2 * 1024 * 1024))
+            .codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(10 * 1024 * 1024))
             .build();
     }
 
@@ -92,6 +92,23 @@ public class OpendatasoftService {
             if (quoteAll != null) builder.queryParam("quote_all", quoteAll);
             if (withBom != null) builder.queryParam("whith_bom", withBom);
             return builder.build();
+        };
+
+        return webClient.get()
+            .uri(uriFunction)
+            .retrieve()
+            .bodyToMono(String.class);
+    }
+
+
+    public Mono<String> exportDCAT(
+        String dcat_ap_format, String includeExports, Boolean useLabelsInExports
+        ) {
+        Function<UriBuilder, java.net.URI> uriFunction = uriBuilder -> {
+            UriBuilder builder = uriBuilder.path("/catalog/exports/dcat/{dcat_ap_format}");
+            if (includeExports != null) builder.queryParam("include_exports", includeExports);
+            if (useLabelsInExports != null) builder.queryParam("use_labels_in_exports", useLabelsInExports);
+            return builder.build(dcat_ap_format);
         };
 
         return webClient.get()
