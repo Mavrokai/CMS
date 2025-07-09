@@ -15,6 +15,7 @@ public class OpendatasoftService {
     public OpendatasoftService(@Value("${opendatasoft.baseurl}") String baseUrl) {
         this.webClient = WebClient.builder()
             .baseUrl(baseUrl)
+            .codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(2 * 1024 * 1024))
             .build();
     }
 
@@ -46,11 +47,57 @@ public class OpendatasoftService {
             .bodyToMono(String.class);
     }
 
-    public Mono<String> getExports() {
 
+    public Mono<String> getExportFormats() {
         return webClient.get()
             .uri("/catalog/exports")
             .retrieve()
             .bodyToMono(String.class);
     }
+
+
+    public Mono<String> exportCatalog(
+        String format, String select, String where, String orderBy, String groupBy,
+        Integer limit, Integer offset, String refine, String exclude, String lang, String timezone
+    ) {
+        Function<UriBuilder, java.net.URI> uriFunction = uriBuilder -> {
+            UriBuilder builder = uriBuilder.path("/catalog/exports/{format}");
+            if (select != null) builder.queryParam("select", select);
+            if (where != null) builder.queryParam("where", where);
+            if (orderBy != null) builder.queryParam("order_by", orderBy);
+            if (groupBy != null) builder.queryParam("group_by", groupBy);
+            if (limit != null) builder.queryParam("limit", limit);
+            if (offset != null) builder.queryParam("offset", offset);
+            if (refine != null) builder.queryParam("refine", refine);
+            if (exclude != null) builder.queryParam("exclude", exclude);
+            if (lang != null) builder.queryParam("lang", lang);
+            if (timezone != null) builder.queryParam("timezone", timezone);
+            return builder.build(format);
+        };
+
+        return webClient.get()
+            .uri(uriFunction)
+            .retrieve()
+            .bodyToMono(String.class);
+    }
+
+
+    public Mono<String> exportCSV(
+        String delimiter, String listSeparator, Boolean quoteAll, Boolean withBom
+        ) {
+        Function<UriBuilder, java.net.URI> uriFunction = uriBuilder -> {
+            UriBuilder builder = uriBuilder.path("/catalog/exports/csv");
+            if (delimiter != null) builder.queryParam("delimiter", delimiter);
+            if (listSeparator != null) builder.queryParam("list_separator", listSeparator);
+            if (quoteAll != null) builder.queryParam("quote_all", quoteAll);
+            if (withBom != null) builder.queryParam("whith_bom", withBom);
+            return builder.build();
+        };
+
+        return webClient.get()
+            .uri(uriFunction)
+            .retrieve()
+            .bodyToMono(String.class);
+    }
+
 }
