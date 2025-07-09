@@ -74,4 +74,15 @@ public class OpendatasoftController {
     ) {
         return service.exportDCAT(dcat_ap_format, includeExports, useLabelsInExports);
     }
+
+    @GetMapping("/api/facets")
+    public Mono<String> facets(
+        @RequestParam(required = false) String facet,
+        @RequestParam(required = false) String refine,
+        @RequestParam(required = false) String exclude,
+        @RequestParam(required = false) String where,
+        @RequestParam(required = false) String timezone
+    ) {
+        return service.facets(facet, refine, exclude, where, timezone);
+    }
 }

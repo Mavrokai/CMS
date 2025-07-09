@@ -117,4 +117,24 @@ public class OpendatasoftService {
             .bodyToMono(String.class);
     }
 
+    
+    public Mono<String> facets(
+        String facet, String refine, String exclude, String where, String timezone
+        ) {
+        Function<UriBuilder, java.net.URI> uriFunction = uriBuilder -> {
+            UriBuilder builder = uriBuilder.path("/catalog/facets");
+            if (facet != null) builder.queryParam("facet", facet);
+            if (refine != null) builder.queryParam("refine", refine);
+            if (exclude != null) builder.queryParam("exclude", exclude);
+            if (where != null) builder.queryParam("where", where);
+            if (timezone != null) builder.queryParam("timezone", timezone);
+            return builder.build();
+        };
+
+        return webClient.get()
+            .uri(uriFunction)
+            .retrieve()
+            .bodyToMono(String.class);
+    }
+
 }
