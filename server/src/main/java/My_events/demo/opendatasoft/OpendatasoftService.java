@@ -48,6 +48,26 @@ public class OpendatasoftService {
     }
 
 
+    public Mono<String> getDataset(
+        String dataset_id, String select, String lang, String timezone, Boolean includeLinks, Boolean includeAppMetas
+    ) {
+        Function<UriBuilder, java.net.URI> uriFunction = uriBuilder -> {
+            UriBuilder builder = uriBuilder.path("/catalog/datasets/{dataset_id}");
+            if (select != null) builder.queryParam("select", select);
+            if (lang != null) builder.queryParam("lang", lang);
+            if (timezone != null) builder.queryParam("timezone", timezone);
+            if (includeLinks != null) builder.queryParam("include_links", includeLinks);
+            if (includeAppMetas != null) builder.queryParam("include_app_metas", includeAppMetas);
+            return builder.build(dataset_id);
+        };
+
+        return webClient.get()
+            .uri(uriFunction)
+            .retrieve()
+            .bodyToMono(String.class);
+    }
+
+
     public Mono<String> getExportFormats() {
         return webClient.get()
             .uri("/catalog/exports")
