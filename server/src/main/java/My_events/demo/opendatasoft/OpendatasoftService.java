@@ -68,6 +68,33 @@ public class OpendatasoftService {
     }
 
 
+    public Mono<String> getDatasetRecords(
+        String dataset_id, String select, String where, String groupBy, String orderBy, Integer limit, Integer offset, String refine, String exclude, String lang, String timezone, Boolean includeLinks, Boolean includeAppMetas
+    ) {
+        Function<UriBuilder, java.net.URI> uriFunction = uriBuilder -> {
+            UriBuilder builder = uriBuilder.path("/catalog/datasets/{dataset_id}/records");
+            if (select != null) builder.queryParam("select", select);
+            if (where != null) builder.queryParam("where", where);
+            if (groupBy != null) builder.queryParam("group_by", groupBy);
+            if (orderBy != null) builder.queryParam("order_by", orderBy);
+            if (limit != null) builder.queryParam("limit", limit);
+            if (offset != null) builder.queryParam("offset", offset);
+            if (refine != null) builder.queryParam("refine", refine);
+            if (exclude != null) builder.queryParam("exclude", exclude);
+            if (lang != null) builder.queryParam("lang", lang);
+            if (timezone != null) builder.queryParam("timezone", timezone);
+            if (includeLinks != null) builder.queryParam("include_links", includeLinks);
+            if (includeAppMetas != null) builder.queryParam("include_app_metas", includeAppMetas);
+            return builder.build(dataset_id);
+        };
+
+        return webClient.get()
+            .uri(uriFunction)
+            .retrieve()
+            .bodyToMono(String.class);
+    }
+
+
     public Mono<String> getExportFormats() {
         return webClient.get()
             .uri("/catalog/exports")

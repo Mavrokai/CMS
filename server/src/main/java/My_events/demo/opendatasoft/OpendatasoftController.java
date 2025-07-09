@@ -46,6 +46,26 @@ public class OpendatasoftController {
     }
 
 
+    @GetMapping("/api/datasets/{dataset_id}/records")
+    public Mono<String> getDatasetRecords(
+        @PathVariable String dataset_id,
+        @RequestParam(required = false) String select,
+        @RequestParam(required = false) String where,
+        @RequestParam(required = false, name = "group_by") String groupBy,
+        @RequestParam(required = false, name = "order_by") String orderBy,
+        @RequestParam(required = false) Integer limit,
+        @RequestParam(required = false) Integer offset,
+        @RequestParam(required = false) String refine,
+        @RequestParam(required = false) String exclude,
+        @RequestParam(required = false) String lang,
+        @RequestParam(required = false) String timezone,
+        @RequestParam(required = false, name = "include_links") Boolean includeLinks,
+        @RequestParam(required = false, name = "include_app_metas") Boolean includeAppMetas
+    ) {
+        return service.getDatasetRecords(dataset_id, select, where, groupBy, orderBy, limit, offset, refine, exclude, lang, timezone, includeLinks, includeAppMetas);
+    }
+
+
     @GetMapping("/api/exports")
     public Mono<String> getExportFormats() {
         return service.getExportFormats();
