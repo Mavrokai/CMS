@@ -45,4 +45,12 @@ public class OpendatasoftService {
             .retrieve()
             .bodyToMono(String.class);
     }
+
+    public Mono<String> getExports() {
+
+        return webClient.get()
+            .uri("/catalog/exports")
+            .retrieve()
+            .bodyToMono(String.class);
+    }
 }

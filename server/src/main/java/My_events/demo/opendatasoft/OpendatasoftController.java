@@ -30,4 +30,10 @@ public class OpendatasoftController {
     ) {
         return service.getDatasets(select, where, orderBy, limit, offset, refine, exclude, lang, timezone, groupBy, includeLinks, includeAppMetas);
     }
+
+
+    @GetMapping("/api/exports")
+    public Mono<String> getExports() {
+        return service.getExports();
+    }
 }
