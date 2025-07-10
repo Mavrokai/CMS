@@ -39,8 +39,20 @@ Installation de direnv :
   direnv allow
   ```
 - Relance le terminal puis fais :
+
   ```
   echo $OPENDATASOFT_BASEURL
   echo $SPRING_SECURITY_USER_NAME
+
   ```
+
 - Si les variables s'affichent, tout est bon
+
+- Si rien ne s'affiche faite ceci :
+
+  ```
+  export OPENDATASOFT_BASEURL="URL_DE_L'API" && export SPRING_SECURITY_USER_NAME="USERNAME" && export SPRING_SECURITY_USER_PASSWORD="PASSWORD" && echo "Variables définies :" && echo "OPENDATASOFT_BASEURL=$OPENDATASOFT_BASEURL" && echo "SPRING_SECURITY_USER_NAME=$SPRING_SECURITY_USER_NAME"
+
+  ```
+
+  changer bien les nom de varible selon vos désir
