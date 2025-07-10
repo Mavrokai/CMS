@@ -1,0 +1,12 @@
+// Conseils importants pour le développement Java avec Spring Boot et l'intégration d'API externes
+
+1. Le nom d'une classe publique doit toujours correspondre exactement au nom du fichier (respect de la casse).
+2. Organise ton code en packages (dossiers) pour séparer les différentes fonctionnalités (ex : opendatasoft pour l'intégration de cette API).
+3. Utilise WebClient (Spring Webflux) pour les appels HTTP asynchrones vers des API externes.
+4. Place la logique d'appel à l'API dans un service (ex : OpendatasoftService.java) et expose des endpoints via un contrôleur (ex : OpendatasoftController.java).
+5. Pour mapper les réponses JSON sur des objets Java, crée des classes POJO correspondant à la structure des données reçues.
+6. Les dépendances sont gérées dans le fichier build.gradle (vérifie que tu as bien spring-boot-starter-web, spring-boot-starter-security, spring-boot-starter-oauth2-client, spring-boot-starter-webflux, spring-boot-devtools).
+7. Pour tester tes endpoints, utilise Postman ou curl, ou accède à http://localhost:8080/tes-endpoints dans ton navigateur.
+8. Si tu ajoutes des paramètres dynamiques à tes requêtes (ex : recherche, pagination), utilise les annotations @RequestParam dans tes contrôleurs.
+9. Pour la sécurité, configure Spring Security dans application.properties ou dans une classe de configuration dédiée.
+10. Consulte toujours les logs de démarrage pour détecter d'éventuelles erreurs de compilation ou de configuration.
