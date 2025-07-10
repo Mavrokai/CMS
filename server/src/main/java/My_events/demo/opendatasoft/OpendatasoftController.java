@@ -81,6 +81,125 @@ public class OpendatasoftController {
                 .body(json));
     }
 
+    @GetMapping("/api/datasets/{dataset_id}/exports")
+    public Mono<ResponseEntity<String>> getDatasetExportFormats(
+        @PathVariable String dataset_id
+    ) {
+        return service.getDatasetExportFormats(dataset_id)
+            .map(json -> ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.CACHE_CONTROL, "no-cache")
+                .body(json));
+    }
+
+    @GetMapping("/api/datasets/{dataset_id}/exports/{format}")
+    public Mono<ResponseEntity<String>> exportDataset(
+        @PathVariable String dataset_id,
+        @PathVariable String format,
+        @RequestParam(required = false) String select,
+        @RequestParam(required = false) String where,
+        @RequestParam(required = false, name = "order_by") String orderBy,
+        @RequestParam(required = false, name = "group_by") String groupBy,
+        @RequestParam(required = false) Integer limit,
+        @RequestParam(required = false) String refine,
+        @RequestParam(required = false) String exclude,
+        @RequestParam(required = false) String lang,
+        @RequestParam(required = false) String timezone,
+        @RequestParam(required = false, name = "use_labels") Boolean useLabels,
+        @RequestParam(required = false) Boolean compressed,
+        @RequestParam(required = false) Integer epsg
+    ) {
+        return service.exportDataset(dataset_id, format, select, where, orderBy, groupBy, limit, refine, exclude, lang, timezone, useLabels, compressed, epsg)
+            .map(json -> ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.CACHE_CONTROL, "no-cache")
+                .body(json));
+    }
+
+    @GetMapping("/api/datasets/{dataset_id}/exports/csv")
+    public Mono<ResponseEntity<String>> exportDatasetCSV(
+        @PathVariable String dataset_id,
+        @RequestParam(required = false) String delimiter,
+        @RequestParam(required = false, name = "list_separator") String listSeparator,
+        @RequestParam(required = false, name = "quote_all") Boolean quoteAll,
+        @RequestParam(required = false, name = "with_bom") Boolean withBom
+    ) {
+        return service.exportDatasetCSV(dataset_id, delimiter, listSeparator, quoteAll, withBom)
+            .map(json -> ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.CACHE_CONTROL, "no-cache")
+                .body(json));
+    }
+
+    @GetMapping("/api/datasets/{dataset_id}/exports/parquet")
+    public Mono<ResponseEntity<String>> exportDatasetParquet(
+        @PathVariable String dataset_id,
+        @RequestParam(required = false, name = "parquet_compression") String parquetCompression
+    ) {
+        return service.exportDatasetParquet(dataset_id, parquetCompression)
+            .map(json -> ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.CACHE_CONTROL, "no-cache")
+                .body(json));
+    }
+
+    @GetMapping("/api/datasets/{dataset_id}/facets")
+    public Mono<ResponseEntity<String>> getDatasetFacets(
+        @PathVariable String dataset_id,
+        @RequestParam(required = false) String where,
+        @RequestParam(required = false) String refine,
+        @RequestParam(required = false) String exclude,
+        @RequestParam(required = false) String facet,
+        @RequestParam(required = false) String lang,
+        @RequestParam(required = false) String timezone
+    ) {
+        return service.getDatasetFacets(dataset_id, where, refine, exclude, facet, lang, timezone)
+            .map(json -> ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.CACHE_CONTROL, "no-cache")
+                .body(json));
+    }
+
+    @GetMapping("/api/datasets/{dataset_id}/exports/gpx")
+    public Mono<ResponseEntity<String>> exportDatasetGPX(
+        @PathVariable String dataset_id,
+        @RequestParam(required = false, name = "name_field") String nameField,
+        @RequestParam(required = false, name = "description_field_list") String descriptionFieldList,
+        @RequestParam(required = false, name = "use_extension") Boolean useExtension
+    ) {
+        return service.exportDatasetGPX(dataset_id, nameField, descriptionFieldList, useExtension)
+            .map(json -> ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.CACHE_CONTROL, "no-cache")
+                .body(json));
+    }
+
+    @GetMapping("/api/datasets/{dataset_id}/attachments")
+    public Mono<ResponseEntity<String>> getDatasetAttachments(
+        @PathVariable String dataset_id
+    ) {
+        return service.getDatasetAttachments(dataset_id)
+            .map(json -> ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.CACHE_CONTROL, "no-cache")
+                .body(json));
+    }
+
+    @GetMapping("/api/datasets/{dataset_id}/records/{record_id}")
+    public Mono<ResponseEntity<String>> getDatasetRecord(
+        @PathVariable String dataset_id,
+        @PathVariable String record_id,
+        @RequestParam(required = false) String select,
+        @RequestParam(required = false) String lang,
+        @RequestParam(required = false) String timezone
+    ) {
+        return service.getDatasetRecord(dataset_id, record_id, select, lang, timezone)
+            .map(json -> ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.CACHE_CONTROL, "no-cache")
+                .body(json));
+    }
+
 
     @GetMapping("/api/exports")
     public Mono<ResponseEntity<String>> getExportFormats() {
