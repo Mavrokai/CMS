@@ -9,7 +9,7 @@ export default {
   },
   mounted() {
     const options = {
-      client_id: '1038562805085-jbclh0d1dt3ub7535ehbpmqeui8amlk2.apps.googleusercontent.com',
+      client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
       auto_select: false,
       cancel_on_tap_outside: false,
       context: 'signin',
