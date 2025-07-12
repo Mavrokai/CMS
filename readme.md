@@ -56,3 +56,17 @@ Installation de direnv :
   ```
 
   changer bien les nom de varible selon vos désir
+
+## Base de données H2
+
+### Accès à la console H2
+
+Une fois le serveur démarré avec `./gradlew bootRun`, accédez à la console H2 via :
+
+- **URL** : `http://localhost:8080/h2-console`
+- **JDBC URL** : `jdbc:h2:mem:testdb`
+- **Username** : `sa`
+- **Password** : (laissez vide)
+
+La console permet de visualiser et modifier directement les données en base.
+(la bdd se reset à chaque reboot du serveur)
