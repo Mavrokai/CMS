@@ -18,7 +18,12 @@ public class User {
     private String avatar;
     private String bio;
     private String password;
-
+    
+    @Column(name = "google_id", unique = true)
+    private String googleId;
+    
+    @Column(name = "auth_provider")
+    private String authProvider = "local";
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -32,4 +37,8 @@ public class User {
     public void setBio(String bio) { this.bio = bio; }
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
+    public String getGoogleId() { return googleId; }
+    public void setGoogleId(String googleId) { this.googleId = googleId; }
+    public String getAuthProvider() { return authProvider; }
+    public void setAuthProvider(String authProvider) { this.authProvider = authProvider; }
 } 

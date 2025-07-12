@@ -7,8 +7,24 @@ const pseudo = ref('')
 const email = ref('')
 const password = ref('')
 const confirmPassword = ref('')
+const avatarFile = ref(null)
+const avatarPreview = ref('https://ui-avatars.com/api/?name=Avatar&background=888&color=fff')
 const loading = ref(false)
 const error = ref('')
+
+function handleAvatarChange(e) {
+  const file = e.target.files[0]
+  avatarFile.value = file
+  if (file) {
+    const reader = new FileReader()
+    reader.onload = (ev) => {
+      avatarPreview.value = ev.target.result
+    }
+    reader.readAsDataURL(file)
+  } else {
+    avatarPreview.value = 'https://ui-avatars.com/api/?name=Avatar&background=888&color=fff'
+  }
+}
 
 const handleRegister = async () => {
   loading.value = true
@@ -24,14 +40,16 @@ const handleRegister = async () => {
     return
   }
   try {
+    const formData = new FormData()
+    formData.append('pseudo', pseudo.value)
+    formData.append('email', email.value)
+    formData.append('password', password.value)
+    if (avatarFile.value) {
+      formData.append('avatar', avatarFile.value)
+    }
     const response = await fetch('http://localhost:8080/register', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        pseudo: pseudo.value,
-        email: email.value,
-        password: password.value,
-      }),
+      body: formData,
     })
     const data = await response.json()
     if (response.ok) {
@@ -49,9 +67,13 @@ const handleRegister = async () => {
 <template>
   <div class="register-container">
     <h2>Inscription</h2>
-    <form @submit.prevent="handleRegister" class="register-form">
+    <div class="avatar-preview">
+      <img :src="avatarPreview" alt="Aperçu avatar" />
+    </div>
+    <form @submit.prevent="handleRegister" class="register-form" enctype="multipart/form-data">
       <input v-model="pseudo" type="text" placeholder="Pseudo" required />
       <input v-model="email" type="email" placeholder="Email" required />
+      <input type="file" accept="image/*" @change="handleAvatarChange" />
       <input v-model="password" type="password" placeholder="Mot de passe" required />
       <input
         v-model="confirmPassword"
@@ -71,36 +93,57 @@ const handleRegister = async () => {
 
 <style>
 .register-container {
-  max-width: 350px;
+  max-width: 370px;
   margin: 60px auto;
   padding: 30px;
-  background: #222;
-  border-radius: 10px;
+  background: #23272f;
+  border-radius: 12px;
   color: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.18);
   text-align: center;
+}
+.avatar-preview {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+.avatar-preview img {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #43a047;
+  background: #fff;
+  box-shadow: 0 1px 6px rgba(67, 160, 71, 0.12);
 }
 .register-form {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 13px;
+}
+.register-form input[type='file'] {
+  background: #fff;
+  color: #23272f;
+  border-radius: 5px;
+  padding: 7px;
 }
 .register-form input {
-  padding: 8px;
+  padding: 9px;
   border-radius: 5px;
   border: none;
 }
 .register-form button {
-  padding: 10px;
+  padding: 11px;
   background: #43a047;
   color: #fff;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   font-weight: bold;
+  font-size: 1.1em;
 }
 .login-btn {
-  margin-top: 18px;
+  margin-top: 20px;
   padding: 10px;
   background: #4285f4;
   color: #fff;

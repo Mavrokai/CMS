@@ -22,6 +22,7 @@ public class SecurityConfig {
                     config.addAllowedMethod("*");
                     config.addAllowedHeader("*");
                     config.setAllowCredentials(true);
+                    config.addExposedHeader("Cross-Origin-Opener-Policy");
                     return config;
                 })
             )
@@ -30,7 +31,12 @@ public class SecurityConfig {
                 .anyRequest().permitAll()
             )
             .formLogin(form -> form.disable())
-            .headers(headers -> headers.frameOptions(frame -> frame.disable()));
+            .headers(headers -> headers
+                .frameOptions(frame -> frame.disable())
+                .addHeaderWriter((request, response) -> {
+                    response.setHeader("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
+                })
+            );
         return http.build();
     }
 

@@ -1,7 +1,6 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { GoogleLogin } from 'vue3-google-login'
 
 const router = useRouter()
 const user = ref(null)
@@ -13,7 +12,24 @@ const isLoggedIn = ref(
   !!(typeof window !== 'undefined' && window.localStorage && localStorage.getItem('token')),
 )
 
-// Connexion classique avec appel backend
+const decodeJwt = (token) => {
+  try {
+    const base64Url = token.split('.')[1]
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map(function (c) {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+        })
+        .join(''),
+    )
+    return JSON.parse(jsonPayload)
+  } catch (e) {
+    return null
+  }
+}
+
 const handleLogin = async () => {
   loading.value = true
   error.value = ''
@@ -38,61 +54,66 @@ const handleLogin = async () => {
   loading.value = false
 }
 
-// Connexion Google
-async function onGoogleSuccess(response) {
-  console.log('Réponse Google:', response)
-  let profile
-  if (response.profileObj) {
-    profile = response.profileObj
-  } else if (response.credential) {
-    // Décoder le JWT Google
-    const base64Url = response.credential.split('.')[1]
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
-    const jsonPayload = decodeURIComponent(
-      atob(base64)
-        .split('')
-        .map((c) => `%${('00' + c.charCodeAt(0).toString(16)).slice(-2)}`)
-        .join(''),
-    )
-    profile = JSON.parse(jsonPayload)
-  } else {
-    error.value = 'Impossible de récupérer le profil Google'
+const handleGoogleLogin = async (googleResponse) => {
+  loading.value = true
+  error.value = ''
+
+  const decodedToken = decodeJwt(googleResponse.credential)
+
+  if (!decodedToken) {
+    error.value = 'Erreur lors du décodage des données Google'
+    loading.value = false
     return
   }
+
+  const requestData = {
+    googleId: decodedToken.sub,
+    email: decodedToken.email,
+    name: decodedToken.name,
+    picture: decodedToken.picture,
+  }
+
   try {
-    const res = await fetch('http://localhost:8080/auth/google', {
+    const response = await fetch('http://localhost:8080/api/auth/google', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email: profile.email,
-        name: profile.name,
-        avatar: profile.picture || profile.imageUrl,
-      }),
+      body: JSON.stringify(requestData),
     })
-    const data = await res.json()
-    if (res.ok) {
+
+    const data = await response.json()
+
+    if (response.ok) {
       localStorage.setItem('token', data.token)
-      localStorage.setItem(
-        'user',
-        JSON.stringify({ name: data.name, avatar: data.avatar, bio: data.bio }),
-      )
+      localStorage.setItem('user', JSON.stringify({ name: data.name }))
       isLoggedIn.value = true
-      setTimeout(() => {
-        router.push('/')
-      }, 100)
+      router.push('/')
     } else {
-      error.value = data.error || 'Erreur Google'
+      error.value = data.error || 'Erreur de connexion Google'
     }
   } catch (e) {
     error.value = 'Erreur réseau'
   }
+  loading.value = false
 }
 
-function onGoogleError(error) {
-  error.value = 'Erreur lors de la connexion Google'
-}
+onMounted(() => {
+  if (typeof window !== 'undefined' && window.google) {
+    window.google.accounts.id.initialize({
+      client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+      callback: handleGoogleLogin,
+      auto_select: false,
+      cancel_on_tap_outside: true,
+    })
 
-// Déconnexion
+    window.google.accounts.id.renderButton(document.getElementById('google-one-tap-button'), {
+      theme: 'outline',
+      size: 'large',
+      width: 200,
+      text: 'signin_with',
+    })
+  }
+})
+
 const logout = () => {
   localStorage.removeItem('token')
   localStorage.removeItem('user')
@@ -110,14 +131,13 @@ const logout = () => {
       <input v-model="password" type="password" placeholder="Mot de passe" required />
       <button type="submit" :disabled="loading">Se connecter</button>
     </form>
-    <div class="google-separator">ou</div>
-    <div id="google-login-btn">
-      <GoogleLogin
-        :onSuccess="onGoogleSuccess"
-        :onError="onGoogleError"
-        :buttonConfig="{ theme: 'filled_blue', size: 'large' }"
-      />
+
+    <div class="divider">
+      <span>ou</span>
     </div>
+
+    <div id="google-one-tap-button" class="google-button"></div>
+
     <button class="register-btn" @click="router.push('/register')" type="button">S'inscrire</button>
     <div v-if="loading" class="loading">Chargement...</div>
     <div v-if="error" class="error">{{ error }}</div>
@@ -127,7 +147,7 @@ const logout = () => {
 
 <style>
 .login-container {
-  max-width: 350px;
+  max-width: 400px;
   margin: 60px auto;
   padding: 30px;
   background: #222;
@@ -155,26 +175,30 @@ const logout = () => {
   cursor: pointer;
   font-weight: bold;
 }
-.google-separator {
-  margin: 18px 0 8px 0;
-  color: #bbb;
+.divider {
+  margin: 20px 0;
+  position: relative;
+  text-align: center;
 }
-.google-btn {
-  margin-top: 10px;
-  padding: 10px;
-  background: #fff;
-  color: #222;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: bold;
-  width: 100%;
-  box-shadow: 0 1px 4px rgba(66, 133, 244, 0.15);
-  transition: background 0.2s;
+.divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #444;
 }
-.google-btn:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
+.divider span {
+  background: #222;
+  padding: 0 10px;
+  color: #888;
+  font-size: 14px;
+}
+.google-button {
+  margin: 15px 0;
+  display: flex;
+  justify-content: center;
 }
 .register-btn {
   margin-top: 18px;
