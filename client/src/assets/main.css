@@ -1,9 +1,10 @@
 @import './base.css';
 
 #app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
   font-weight: normal;
 }
 
@@ -15,6 +16,16 @@ a,
   padding: 3px;
 }
 
+.nav-link:hover {
+  background: none;
+  color: #7c3aed;
+}
+
+.logo-link:hover {
+  background: none;
+  color: #7c3aed;
+}
+
 @media (hover: hover) {
   a:hover {
     background-color: hsla(160, 100%, 37%, 0.2);
@@ -23,13 +34,13 @@ a,
 
 @media (min-width: 1024px) {
   body {
-    display: flex;
-    place-items: center;
+    display: block;
+    place-items: initial;
   }
 
   #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
+    display: block;
+    grid-template-columns: none;
+    padding: 0;
   }
 }
