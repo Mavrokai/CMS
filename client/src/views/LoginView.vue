@@ -139,8 +139,8 @@ const logout = () => {
       <div id="google-one-tap-button" class="google-button"></div>
       <div class="divider"><span>ou</span></div>
       <form @submit.prevent="handleLogin" class="login-form">
-        <label for="email">Adresse email</label>
-        <input v-model="pseudo" id="email" type="email" placeholder="votre@email.com" required />
+        <label for="pseudo">Nom d'utilisateur</label>
+        <input v-model="pseudo" id="pseudo" type="text" placeholder="Nom d'utilisateur" required />
         <label for="password">Mot de passe</label>
         <input v-model="password" id="password" type="password" placeholder="********" required />
         <button type="submit" :disabled="loading" class="main-btn">Se connecter</button>
