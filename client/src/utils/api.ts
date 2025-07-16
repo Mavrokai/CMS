@@ -35,7 +35,7 @@ api.interceptors.response.use(response => {
 
 export async function getAllEvents() {
     try {
-    const response = await api.get("/api/datasets");
+    const response = await api.get("/api/explore/v2.1/catalog/datasets/evenements-publics-openagenda/records");
     console.log(response.data)
     return response.data;
   } catch (error) {
