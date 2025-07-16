@@ -1,5 +1,72 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterLink, RouterView, useRoute, useRouter } from 'vue-router'
+import { ref, computed, onMounted } from 'vue'
+const route = useRoute()
+const router = useRouter()
+
+const isLoggedIn = ref(false)
+const user = ref(null)
+const avatar = ref('')
+const dropdownOpen = ref(false)
+
+const getAvatarUrl = (avatarPath) => {
+  if (!avatarPath) return 'https://ui-avatars.com/api/?name=Avatar&background=888&color=fff'
+  if (avatarPath.startsWith('https://')) return avatarPath
+  if (avatarPath.startsWith('/uploads/avatars/')) {
+    const filename = avatarPath.split('/').pop()
+    return `http://localhost:8080/user/avatar/${filename}`
+  }
+  return avatarPath
+}
+
+const fetchUser = async () => {
+  const userData = JSON.parse(localStorage.getItem('user') || 'null')
+  const token = localStorage.getItem('token')
+  if (userData && userData.name && token) {
+    isLoggedIn.value = true
+    try {
+      const res = await fetch(
+        `http://localhost:8080/user/me?pseudo=${encodeURIComponent(userData.name)}`,
+        { headers: { Authorization: `Bearer ${token}` } },
+      )
+      if (res.ok) {
+        const data = await res.json()
+        user.value = data
+        console.log('Avatar reçu depuis l’API:', data.avatar)
+        avatar.value =
+          getAvatarUrl(data.avatar) ||
+          'https://ui-avatars.com/api/?name=Avatar&background=888&color=fff'
+      } else {
+        isLoggedIn.value = false
+        user.value = null
+        avatar.value = 'https://ui-avatars.com/api/?name=Avatar&background=888&color=fff'
+      }
+    } catch {
+      isLoggedIn.value = false
+      user.value = null
+      avatar.value = 'https://ui-avatars.com/api/?name=Avatar&background=888&color=fff'
+    }
+  } else {
+    isLoggedIn.value = false
+    user.value = null
+    avatar.value = 'https://ui-avatars.com/api/?name=Avatar&background=888&color=fff'
+  }
+}
+
+onMounted(() => {
+  fetchUser()
+  window.addEventListener('user-updated', fetchUser)
+})
+
+const handleLogout = () => {
+  localStorage.removeItem('token')
+  localStorage.removeItem('user')
+  isLoggedIn.value = false
+  user.value = null
+  avatar.value = ''
+  dropdownOpen.value = false
+  router.push('/login')
+}
 </script>
 
 <template>
@@ -17,10 +84,28 @@ import { RouterLink, RouterView } from 'vue-router'
         <RouterLink to="/about" class="nav-link">À propos</RouterLink>
       </div>
       <div class="navbar-right">
-        <RouterLink to="/register" class="signup-btn">S'inscrire</RouterLink>
+        <template v-if="isLoggedIn">
+          <div class="avatar-dropdown" @click="dropdownOpen = !dropdownOpen">
+            <img :src="avatar" :key="avatar" alt="Avatar" class="navbar-avatar" />
+            <div v-if="dropdownOpen" class="dropdown-menu">
+              <RouterLink to="/profile" class="dropdown-item" @click.stop="dropdownOpen = false"
+                >Profil</RouterLink
+              >
+              <button class="dropdown-item" @click.stop="handleLogout">Déconnexion</button>
+            </div>
+          </div>
+        </template>
+        <template v-else>
+          <template v-if="route.path === '/register'">
+            <RouterLink to="/login" class="signup-btn">Se connecter</RouterLink>
+          </template>
+          <template v-else-if="route.path === '/login'">
+            <RouterLink to="/register" class="signup-btn">S'inscrire</RouterLink>
+          </template>
+        </template>
       </div>
     </nav>
-    <main>
+    <main :class="{ 'no-padding-top': route.path === '/profile' }">
       <RouterView />
     </main>
   </div>
@@ -121,5 +206,51 @@ main {
   align-items: initial;
   justify-content: initial;
   padding-top: 32px;
+}
+.no-padding-top {
+  padding-top: 0 !important;
+}
+.navbar-avatar {
+  width: 38px !important;
+  height: 38px !important;
+  display: block !important;
+  opacity: 1 !important;
+  border-radius: 50% !important;
+  object-fit: cover !important;
+  background: #fff !important;
+}
+.avatar-dropdown {
+  position: relative;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+.dropdown-menu {
+  position: absolute;
+  top: 48px;
+  right: 0;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(44, 62, 80, 0.12);
+  min-width: 140px;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  padding: 8px 0;
+}
+.dropdown-item {
+  padding: 10px 18px;
+  color: #222;
+  text-align: left;
+  background: none;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+.dropdown-item:hover {
+  background: #f3f0fd;
+  color: #7c3aed;
 }
 </style>

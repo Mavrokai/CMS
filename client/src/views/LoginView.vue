@@ -42,8 +42,9 @@ const handleLogin = async () => {
     const data = await response.json()
     if (response.ok) {
       localStorage.setItem('token', data.token)
-      localStorage.setItem('user', JSON.stringify({ name: data.name }))
+      localStorage.setItem('user', JSON.stringify({ name: data.name, avatar: data.avatar }))
       isLoggedIn.value = true
+      window.dispatchEvent(new Event('user-updated'))
       router.push('/')
     } else {
       error.value = data.error || 'Erreur de connexion'
@@ -84,8 +85,9 @@ const handleGoogleLogin = async (googleResponse) => {
 
     if (response.ok) {
       localStorage.setItem('token', data.token)
-      localStorage.setItem('user', JSON.stringify({ name: data.name }))
+      localStorage.setItem('user', JSON.stringify({ name: data.name, avatar: data.avatar }))
       isLoggedIn.value = true
+      window.dispatchEvent(new Event('user-updated'))
       router.push('/')
     } else {
       error.value = data.error || 'Erreur de connexion Google'

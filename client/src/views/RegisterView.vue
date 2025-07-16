@@ -70,6 +70,7 @@ async function handleGoogleLogin(googleResponse) {
     if (response.ok) {
       localStorage.setItem('token', data.token)
       localStorage.setItem('user', JSON.stringify({ name: data.name }))
+      window.dispatchEvent(new Event('user-updated'))
       router.push('/')
     } else {
       error.value = data.error || 'Erreur de connexion Google'
@@ -124,6 +125,7 @@ const handleRegister = async () => {
     })
     const data = await response.json()
     if (response.ok) {
+      window.dispatchEvent(new Event('user-updated'))
       router.push('/login')
     } else {
       error.value = data.error || "Erreur lors de l'inscription"

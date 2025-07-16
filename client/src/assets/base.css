@@ -34,6 +34,45 @@
   --color-text: var(--vt-c-text-light-1);
 
   --section-gap: 160px;
+  --color-purple: #7c3aed;
+  --color-purple-light: #a78bfa;
+  --color-red: #ef4444;
+  --color-green: #22c55e;
+  --color-yellow: #fbbf24;
+  --color-gray: #f3f4f6;
+  --color-gray-dark: #e5e7eb;
+  --color-border-strong: #e5e7eb;
+}
+
+.profile-bg-purple {
+  background: var(--color-purple);
+  color: #fff;
+}
+.profile-bg-gray {
+  background: var(--color-gray);
+}
+.profile-badge {
+  display: inline-block;
+  border-radius: 6px;
+  font-size: 0.85em;
+  padding: 2px 10px;
+  font-weight: 600;
+}
+.profile-badge-purple {
+  background: var(--color-purple-light);
+  color: #fff;
+}
+.profile-badge-green {
+  background: var(--color-green);
+  color: #fff;
+}
+.profile-badge-yellow {
+  background: var(--color-yellow);
+  color: #fff;
+}
+.profile-badge-red {
+  background: var(--color-red);
+  color: #fff;
 }
 
 @media (prefers-color-scheme: dark) {
