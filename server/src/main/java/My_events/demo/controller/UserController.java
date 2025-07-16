@@ -9,7 +9,9 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-
+import org.springframework.web.multipart.MultipartFile;
+import java.util.UUID;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
@@ -51,12 +53,42 @@ public class UserController {
     }
 
     @PutMapping("/me")
-    public ResponseEntity<?> updateBio(@RequestParam String pseudo, @RequestBody Map<String, String> body) {
+    public ResponseEntity<?> updateProfile(@RequestParam String pseudo,
+                                           @RequestParam(value = "avatar", required = false) MultipartFile avatarFile,
+                                           @RequestParam(value = "newPseudo", required = false) String newPseudo,
+                                           @RequestParam(value = "email", required = false) String email,
+                                           @RequestParam(value = "bio", required = false) String bio) {
         return userRepository.findByPseudo(pseudo)
                 .map(user -> {
-                    user.setBio(body.getOrDefault("bio", user.getBio()));
+                    if (newPseudo != null && !newPseudo.isBlank()) {
+                        user.setPseudo(newPseudo);
+                    }
+                    if (email != null && !email.isBlank()) {
+                        user.setEmail(email);
+                    }
+                    if (bio != null) {
+                        user.setBio(bio);
+                    }
+                    if (avatarFile != null && !avatarFile.isEmpty()) {
+                        try {
+                            String ext = avatarFile.getOriginalFilename() != null && avatarFile.getOriginalFilename().contains(".") ? avatarFile.getOriginalFilename().substring(avatarFile.getOriginalFilename().lastIndexOf('.')) : "";
+                            String fileName = UUID.randomUUID() + ext;
+                            Path uploadDir = Paths.get("uploads/avatars");
+                            Files.createDirectories(uploadDir);
+                            Path filePath = uploadDir.resolve(fileName);
+                            avatarFile.transferTo(filePath);
+                            user.setAvatar("/uploads/avatars/" + fileName);
+                        } catch (Exception e) {
+                            return ResponseEntity.status(500).body(Map.of("error", "Erreur lors de l'upload de l'avatar"));
+                        }
+                    }
                     userRepository.save(user);
-                    return ResponseEntity.ok(Map.of("bio", user.getBio()));
+                    return ResponseEntity.ok(Map.of(
+                        "pseudo", user.getPseudo(),
+                        "email", user.getEmail(),
+                        "avatar", user.getAvatar(),
+                        "bio", user.getBio()
+                    ));
                 })
                 .orElse(ResponseEntity.status(404).body(Map.of("error", "Utilisateur non trouvé")));
     }
