@@ -608,4 +608,49 @@ onMounted(reloadProfile)
   margin-top: 10px;
   color: #e53935;
 }
+@media (max-width: 480px) {
+  .profile-card,
+  .profile-stats,
+  .profile-section,
+  .profile-tabs,
+  .profile-events {
+    flex-direction: column !important;
+    gap: 12px !important;
+    align-items: stretch !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+  }
+  .profile-avatar {
+    width: 64px;
+    height: 64px;
+  }
+  .edit-btn,
+  .main-btn,
+  .cancel {
+    width: 100%;
+    margin-bottom: 8px;
+  }
+  .edit-profile-form input,
+  .edit-profile-form textarea {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+@media (min-width: 481px) and (max-width: 768px) {
+  .profile-card,
+  .profile-stats,
+  .profile-section,
+  .profile-tabs,
+  .profile-events {
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+    width: 100%;
+    max-width: 95vw;
+  }
+  .profile-avatar {
+    width: 80px;
+    height: 80px;
+  }
+}
 </style>

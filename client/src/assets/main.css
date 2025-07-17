@@ -346,3 +346,66 @@ a,
   content: '\1F465';
   margin-right: 6px;
 }
+
+/* === Responsive breakpoints === */
+@media (max-width: 480px) {
+  html {
+    font-size: 14px;
+  }
+  .login-card,
+  .register-card,
+  .profile-card {
+    padding: 24px 8px;
+    max-width: 98vw;
+    min-width: unset;
+  }
+  .profile-card,
+  .profile-stats,
+  .profile-section,
+  .profile-tabs,
+  .profile-events {
+    flex-direction: column !important;
+    gap: 12px !important;
+    align-items: stretch !important;
+  }
+  .login-form input,
+  .register-form input,
+  .register-form button,
+  .login-form button {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+@media (min-width: 481px) and (max-width: 768px) {
+  html {
+    font-size: 15px;
+  }
+  .login-card,
+  .register-card,
+  .profile-card {
+    padding: 32px 16px;
+    max-width: 95vw;
+  }
+}
+@media (min-width: 769px) and (max-width: 1279px) {
+  html {
+    font-size: 16px;
+  }
+  .login-card,
+  .register-card,
+  .profile-card {
+    padding: 40px 32px;
+    max-width: 700px;
+  }
+}
+@media (min-width: 1280px) {
+  html {
+    font-size: 17px;
+  }
+  .login-card,
+  .register-card,
+  .profile-card {
+    padding: 56px 48px;
+    max-width: 900px;
+  }
+}

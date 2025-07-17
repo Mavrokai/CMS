@@ -308,4 +308,22 @@ const logout = () => {
   margin-top: 10px;
   color: #e53935;
 }
+@media (max-width: 480px) {
+  .login-card {
+    padding: 24px 8px;
+    max-width: 98vw;
+    min-width: unset;
+  }
+  .login-form input,
+  .login-form button {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+@media (min-width: 481px) and (max-width: 768px) {
+  .login-card {
+    padding: 32px 16px;
+    max-width: 95vw;
+  }
+}
 </style>
