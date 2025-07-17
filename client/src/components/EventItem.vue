@@ -25,7 +25,7 @@ const setEventImg = computed(() => {
       <h3>{{ itemevent.title_fr }}</h3>
       <p>{{ itemevent.description }}</p>
       <p>Adresse : {{ itemevent.location_address }}</p>
-      <button>Voir détails</button>
+      <button><router-link :to="`/details?uid=${itemevent.uid}`" class="details">détails</router-link></button>
     </div>
   </div>
 </template>
@@ -50,7 +50,11 @@ button {
   border-radius: 10px;
   box-shadow: 1px 1px whitesmoke;
   margin: 1%;
-  width: 500px;
+  height: 100%;
+  min-width: 250px;
+  min-height: 300px;
+  max-width: 600px;
+  max-height: 500px;
 }
 
 .event_img {
@@ -68,6 +72,10 @@ button {
   border-radius: 5px;
   text-align: center;
   margin-bottom: 10px;
+}
+
+.details {
+  color: white;
 }
 
 .event_info {
