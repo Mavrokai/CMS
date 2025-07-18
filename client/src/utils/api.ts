@@ -36,7 +36,7 @@ api.interceptors.response.use(
   },
 )
 
-export async function getAllEvents(city: string, keywords: string, date: string, limit: bigint) {
+export async function getAllEvents(city: string, keywords: string, date: string, limit: Number, offset: Number) {
   let queryParams: string[] = [];
 
   if (city.trim() !== "") {
@@ -63,11 +63,14 @@ export async function getAllEvents(city: string, keywords: string, date: string,
 
   fetchUrl += `${queryParams.length > 0 ? '&' : '?' }limit=${limit.toString()}`;
 
+  if (offset != 0) {
+    fetchUrl += "&offset=" + offset
+  }
+
   try {
     console.log("Fetching URL:", fetchUrl);
     const response = await api.get(fetchUrl);
-    console.log(response.data.records);
-    return response.data.records;
+    return response.data;
   } catch (error) {
     console.error("Error fetching events:", error);
     throw error;

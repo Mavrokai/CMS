@@ -41,9 +41,9 @@
         <div class="filter">
           <label for="limit">Événement par page</label>
           <select name="limit" id="limit" v-model="limit">
-            <option value="10">10</option>
-            <option value="20">20</option>
-            <option value="50">50</option>
+            <option value="12">12</option>
+            <option value="24">24</option>
+            <option value="48">48</option>
           </select>
         </div>
       </div>
@@ -54,6 +54,7 @@
         <div v-for="event in events" :key="event.record.fields.uid">
           <EventItem :itemevent="event.record.fields" />
         </div>
+        <input type="number" name="page" id="page" v-model="currentPage">
       </div>
       <div v-else-if="error">
         <p>Une erreur est survenue lors du chargement des événements : {{ error }}</p>
@@ -75,13 +76,16 @@ const loading = ref(false)
 const events = ref(null)
 const error = ref(null)
 const cityList = ref([])
+const totalCount = ref('')
+const nbrPage = ref(0)
+const currentPage = ref(1)
 const selectedCity = ref('')
-const limit = ref(10)
+const limit = ref(12)
 const keywords = ref('')
 const date = ref('')
 const regexCities = /^[a-zA-Z\s-\'']+/
 
-watch([selectedCity, keywords, date, limit], fetchData, { immediate: true })
+watch([selectedCity, keywords, date, limit, currentPage], fetchData, { immediate: true })
 
 async function fetchData() {
   error.value = null
@@ -89,9 +93,13 @@ async function fetchData() {
   loading.value = true
 
   try {
-    events.value = await getAllEvents(selectedCity.value, keywords.value, date.value, limit.value)
+    const offset = (currentPage.value - 1) * limit.value
+    const data = await getAllEvents(selectedCity.value, keywords.value, date.value, limit.value, offset)
+    events.value = data.records
+    totalCount.value = data.total_count
+    pagination()
 
-    console.log(events.value)
+    console.log(totalCount.value)
   } catch (err) {
     error.value = err.toString()
   } finally {
@@ -102,6 +110,10 @@ async function fetchData() {
 async function fetchCities() {
   const rawCities = await getAllCities()
   cityList.value = rawCities.filter((city) => regexCities.test(city.record.fields.city))
+}
+
+function pagination() {
+  nbrPage.value = Math.ceil(totalCount.value / limit.value)
 }
 
 onMounted(() => {
@@ -144,5 +156,9 @@ h1 {
   grid-template-columns: repeat(3, 1fr);
   gap: 3% 5%;
   margin: auto;
+}
+
+#page {
+  width: fit-content;
 }
 </style>
