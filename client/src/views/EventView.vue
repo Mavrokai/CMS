@@ -51,8 +51,8 @@
     <div v-if="loading">Récupération des événements</div>
     <div v-else>
       <div v-if="events && events.length > 0" id="events">
-        <div v-for="event in events" :key="event.uid">
-          <EventItem :itemevent="event" />
+        <div v-for="event in events" :key="event.record.fields.uid">
+          <EventItem :itemevent="event.record.fields" />
         </div>
       </div>
       <div v-else-if="error">
@@ -64,7 +64,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { getAllCities, getAllEvents } from '@/utils/api'
 import EventItem from '../components/EventItem.vue'
@@ -81,9 +81,7 @@ const keywords = ref('')
 const date = ref('')
 const regexCities = /^[a-zA-Z\s-\'']+/
 
-
 watch([selectedCity, keywords, date, limit], fetchData, { immediate: true })
-
 
 async function fetchData() {
   error.value = null
@@ -92,9 +90,7 @@ async function fetchData() {
 
   try {
     events.value = await getAllEvents(selectedCity.value, keywords.value, date.value, limit.value)
-    const rawCities = await getAllCities()
 
-    cityList.value = rawCities.filter((city) => regexCities.test(city.record.fields.city))
     console.log(events.value)
   } catch (err) {
     error.value = err.toString()
@@ -102,6 +98,15 @@ async function fetchData() {
     loading.value = false
   }
 }
+
+async function fetchCities() {
+  const rawCities = await getAllCities()
+  cityList.value = rawCities.filter((city) => regexCities.test(city.record.fields.city))
+}
+
+onMounted(() => {
+  fetchCities()
+})
 </script>
 
 <style scoped>
