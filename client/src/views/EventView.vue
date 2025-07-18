@@ -6,18 +6,45 @@
       <div id="filters">
         <div class="filter">
           <label for="city">Ville</label>
-          <select name="city" id="city">
-            <option value="" selected>Toutes les villes</option>
-            <option value="Lille">Lille</option>
-          </select>
+          <input
+            type="text"
+            list="cities"
+            name="city"
+            id="city"
+            v-model="selectedCity"
+            placeholder="Ville"
+          />
+          <datalist id="cities">
+            <option
+              v-for="city in cityList"
+              :key="city.record.fields.city"
+              :value="city.record.fields.city"
+            >
+              {{ city.record.fields.city }}
+            </option>
+          </datalist>
         </div>
         <div class="filter">
           <label for="keywords">Mots clés</label>
-          <input type="text" name="keywords" id="keywords" />
+          <input
+            type="text"
+            name="keywords"
+            id="keywords"
+            v-model="keywords"
+            placeholder="Mots clés"
+          />
         </div>
         <div class="filter">
           <label for="date">Date</label>
-          <input type="date" name="date" id="date" />
+          <input type="date" name="date" id="date" v-model="date" />
+        </div>
+        <div class="filter">
+          <label for="limit">Événement par page</label>
+          <select name="limit" id="limit" v-model="limit">
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="50">50</option>
+          </select>
         </div>
       </div>
     </div>
@@ -39,7 +66,7 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { getAllEvents } from '@/utils/api'
+import { getAllCities, getAllEvents } from '@/utils/api'
 import EventItem from '../components/EventItem.vue'
 
 const route = useRoute()
@@ -47,11 +74,16 @@ const route = useRoute()
 const loading = ref(false)
 const events = ref(null)
 const error = ref(null)
-const selectedCity = ref(null)
-const keywords = ref(null)
-const date = ref(null)
+const cityList = ref([])
+const selectedCity = ref('')
+const limit = ref(10)
+const keywords = ref('')
+const date = ref('')
+const regexCities = /^[a-zA-Z\s-\'']+/
 
-watch(() => route.params.query, fetchData, { immediate: true })
+
+watch([selectedCity, keywords, date, limit], fetchData, { immediate: true })
+
 
 async function fetchData() {
   error.value = null
@@ -59,7 +91,11 @@ async function fetchData() {
   loading.value = true
 
   try {
-    events.value = await getAllEvents()
+    events.value = await getAllEvents(selectedCity.value, keywords.value, date.value, limit.value)
+    const rawCities = await getAllCities()
+
+    cityList.value = rawCities.filter((city) => regexCities.test(city.record.fields.city))
+    console.log(events.value)
   } catch (err) {
     error.value = err.toString()
   } finally {

@@ -36,13 +36,53 @@ api.interceptors.response.use(
   },
 )
 
-export async function getAllEvents() {
+export async function getAllEvents(city: string, keywords: string, date: string, limit: bigint) {
+  let queryParams: string[] = [];
+
+  if (city.trim() !== "") {
+    queryParams.push(`location_city="${encodeURIComponent(city.trim())}"`);
+  }
+
+  if (keywords.trim() !== "") {
+    const keywordArray = keywords.split(',').map(kw => kw.trim()).filter(kw => kw !== '');
+    if (keywordArray.length > 0) {
+      const keywordQueries = keywordArray.map(kw => `keywords_fr="${encodeURIComponent(kw)}"`).join(' AND ');
+      queryParams.push(`(${keywordQueries})`);
+    }
+  }
+
+  if (date.trim() !== "") {
+    queryParams.push(`daterange_fr="${encodeURIComponent(date.trim())}"`);
+  }
+
+  let fetchUrl = '/api/explore/v2.1/catalog/datasets/evenements-publics-openagenda/records';
+
+  if (queryParams.length > 0) {
+    fetchUrl += `?where=${queryParams.join(' AND ')}`;
+  }
+
+  fetchUrl += `${queryParams.length > 0 ? '&' : '?' }limit=${limit.toString()}`;
+
+  try {
+    console.log("Fetching URL:", fetchUrl);
+    const response = await api.get(fetchUrl);
+    console.log(response.data.records);
+    return response.data.records;
+  } catch (error) {
+    console.error("Error fetching events:", error);
+    throw error;
+  }
+}
+
+export async function getAllCities() {
   try {
     const response = await api.get(
-      '/api/explore/v2.1/catalog/datasets/evenements-publics-openagenda/records',
+      '/api/explore/v2.1/catalog/datasets/evenements-publics-openagenda/records?select=location_city&group_by=location_city as city&limit=20000',
     )
-    return response.data.results
+    console.log(response.data.records)
+    return response.data.records
   } catch (error) {
     throw error
   }
 }
+
