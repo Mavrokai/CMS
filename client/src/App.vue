@@ -107,10 +107,18 @@ const handleLogout = () => {
     <main :class="{ 'no-padding-top': route.path === '/profile' }">
       <RouterView />
     </main>
+
+    <footer></footer>
   </div>
 </template>
 
 <style scoped>
+footer {
+  background-color: black;
+  height: 300px;
+  margin-top: 250px;
+}
+
 .app-bg {
   min-height: 100vh;
   background: #fafbfc;
