@@ -1,23 +1,34 @@
 <script setup>
-import { computed } from 'vue'
+import { ref, watch, computed } from 'vue'
+import { getRandomImageForEvent } from '@/utils/randomImages'
 import defaultImg from '../assets/calendaricon.jpg'
 
 const props = defineProps({
   itemevent: Object,
 })
 
-const setEventImg = computed(() => {
+const initialImg = computed(() => {
   if (props.itemevent.originalimage) {
     return props.itemevent.originalimage
   } else {
-    return defaultImg
+    return getRandomImageForEvent(props.itemevent.uid) || defaultImg
   }
 })
+
+const eventImg = ref(initialImg.value)
+
+watch(initialImg, (val) => {
+  eventImg.value = val
+})
+
+function handleImgError() {
+  eventImg.value = getRandomImageForEvent(props.itemevent.uid) || defaultImg
+}
 </script>
 
 <template>
   <div class="event_card">
-    <img :src="setEventImg" alt="Image de l'évenement" class="event_img" />
+    <img :src="eventImg" alt="Image de l'évenement" class="event_img" @error="handleImgError" />
     <div class="event_info">
       <div class="event_date">
         <b>{{ itemevent.daterange_fr }}</b>
@@ -25,7 +36,9 @@ const setEventImg = computed(() => {
       <h3>{{ itemevent.title_fr }}</h3>
       <p>{{ itemevent.description }}</p>
       <p>Adresse : {{ itemevent.location_address }}</p>
-      <button><router-link :to="`/details?uid=${itemevent.uid}`" class="details">détails</router-link></button>
+      <button>
+        <router-link :to="`/details?uid=${itemevent.uid}`" class="details">détails</router-link>
+      </button>
     </div>
   </div>
 </template>
