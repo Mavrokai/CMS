@@ -32,7 +32,6 @@ const fetchUser = async () => {
       if (res.ok) {
         const data = await res.json()
         user.value = data
-        console.log('Avatar reçu depuis l’API:', data.avatar)
         avatar.value =
           getAvatarUrl(data.avatar) ||
           'https://ui-avatars.com/api/?name=Avatar&background=888&color=fff'
@@ -205,7 +204,6 @@ main {
   display: block;
   align-items: initial;
   justify-content: initial;
-  padding-top: 32px;
 }
 .no-padding-top {
   padding-top: 0 !important;
