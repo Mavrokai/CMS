@@ -2,7 +2,7 @@ import axios from 'axios'
 
 interface ErrorResponse {
   message: string
-  code?: string // Code d'erreur optionnel
+  code?: string
 }
 
 interface Events {}
@@ -21,7 +21,7 @@ api.interceptors.response.use(
   },
   (error) => {
     if (error.response) {
-      const errorData: ErrorResponse = error.response.data // Type l'objet d'erreur
+      const errorData: ErrorResponse = error.response.data
       console.error("Erreur de l'API :", errorData.message || 'Erreur inconnue')
       return Promise.reject(
         new Error(errorData.message || `Erreur de l'API: ${error.response.status}`),
@@ -85,3 +85,4 @@ export async function getAllCities() {
     throw error
   }
 }
+

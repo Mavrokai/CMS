@@ -51,8 +51,8 @@
     <div v-if="loading">Récupération des événements</div>
     <div v-else>
       <div v-if="events && events.length > 0" id="events">
-        <div v-for="event in events" :key="event.record.fields.uid">
-          <EventItem :itemevent="event.record.fields" />
+        <div v-for="event in events" :key="event.uid">
+          <EventItem :itemevent="event" />
         </div>
       </div>
       <div v-else-if="error">
@@ -81,7 +81,9 @@ const keywords = ref('')
 const date = ref('')
 const regexCities = /^[a-zA-Z\s-\'']+/
 
+
 watch([selectedCity, keywords, date, limit], fetchData, { immediate: true })
+
 
 async function fetchData() {
   error.value = null
